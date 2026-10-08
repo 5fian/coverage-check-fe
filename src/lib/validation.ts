@@ -48,7 +48,11 @@ const coordinatesSchema = z
   .refine((value) => {
     const regex = /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/;
     return regex.test(value);
-  }, "Invalid coordinates format. e.g: 3.456,89.012 or -3.456,-89.012");
+  }, "Invalid coordinates format. e.g: 3.456,89.012 or -3.456,-89.012")
+  .refine((value) => {
+    const [lat, lng] = value.split(",").map((v) => Number(v.trim()));
+    return Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
+  }, "Latitude must be between -90 and 90, longitude between -180 and 180");
 
 export const formSchema = z.object({
   salesmanName: z.string().min(1, "Salesman name is required"),
